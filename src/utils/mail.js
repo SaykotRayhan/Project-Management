@@ -5,72 +5,84 @@ const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
         theme: "default",
         product: {
-            name: "Project Management Platform",
-            link: "https://www.example.com/",
-        }
-    })
-    const emailTextual = mailGenerator.generatePlaintext(options.MailgenContent);
-    const emailHTML = mailGenerator.generate(options.MailgenContent);
+            name: "Task Manager",
+            link: "https://taskmanagelink.com",
+        },
+    });
+
+    const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+
+    const emailHtml = mailGenerator.generate(options.mailgenContent);
 
     const transporter = nodemailer.createTransport({
         host: process.env.MAILTRAP_SMTP_HOST,
         port: process.env.MAILTRAP_SMTP_PORT,
         auth: {
             user: process.env.MAILTRAP_SMTP_USER,
-            pass: process.env.MAILTRAP_SMTP_PASS
-        }
+            pass: process.env.MAILTRAP_SMTP_PASS,
+        },
     });
 
     const mail = {
-        from: "mail.projectManager@example.com",
-        to: options.to,
+        from: "mail.taskmanager@example.com",
+        to: options.email,
         subject: options.subject,
         text: emailTextual,
-        html: emailHTML
-    }
+        html: emailHtml,
+    };
 
     try {
         await transporter.sendMail(mail);
     } catch (error) {
-        console.error("Error sending email:", error);
-        throw error;
+        console.error(
+            "Email service failed siliently. Make sure that you have provided your MAILTRAP credentials in the .env file",
+        );
+        console.error("Error: ", error);
     }
-}
+};
 
-const emailVerificationMailgenContent = (userName, verificationUrl) => {
+const emailVerificationMailgenContent = (username, verificationUrl) => {
     return {
         body: {
-            name: userName,
-            intro: "Welcome to our App! We're excited to have you on board.",
+            name: username,
+            intro: "Welcome to our App! we'are excited to have you on board.",
             action: {
-                instructions: "To verify your email address, please click the button below:",
+                instructions:
+                    "To verify your email please click on the following button",
                 button: {
-                    color: "#22BC66', // Optional action button color",
-                    text: "Confirm your email",
-                    link: verificationUrl
-                }
+                    color: "#22BC66",
+                    text: "Verify your email",
+                    link: verificationUrl,
+                },
             },
-            outro: "Need help, or have questions? Just reply to this email, we'd love to help."
-        }
-    }
-}
+            outro:
+                "Need help, or have questions? Just reply to this email, we'd love to help.",
+        },
+    };
+};
 
-const forgotPasswordMailgenContent = (userName, passwordResetUrl) => {
+const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
     return {
         body: {
-            name: userName,
-            intro: "We got a request to reset your password. If you did not make this request, please ignore this email.",
+            name: username,
+            intro: "We got a request to reset the password of your account",
             action: {
-                instructions: "To reset your password, please click the button below:",
+                instructions:
+                    "To reset your password click on the following button or link",
                 button: {
-                    color: "#22BC66', // Optional action button color",
-                    text: "Reset your password",
-                    link: passwordResetUrl
-                }
+                    color: "#22BC66",
+                    text: "Reset password",
+                    link: passwordResetUrl,
+                },
             },
-            outro: "Need help, or have questions? Just reply to this email, we'd love to help."
-        }
-    }
-}
+            outro:
+                "Need help, or have questions? Just reply to this email, we'd love to help.",
+        },
+    };
+};
 
-export { emailVerificationMailgenContent, forgotPasswordMailgenContent, sendEmail };
+export {
+    emailVerificationMailgenContent,
+    forgotPasswordMailgenContent,
+    sendEmail,
+};
